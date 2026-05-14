@@ -1,0 +1,6 @@
+=== Laporan Hasil Pengujian Selenium - Smart Trash Bin ===
+
+[2025-07-24 16:03:50] REGISTER TEST - ✅ Sukses : Berhasil mendaftar & diarahkan ke dashboard
+[2025-07-24 16:03:55] LOGOUT TEST (After Register) - ✅ Sukses : Berhasil logout (URL sekarang: http://127.0.0.1:8000/)
+[2025-07-24 16:04:04] LOGIN TEST - ✅ Sukses : Berhasil login
+[2025-07-24 16:04:09] LOGOUT TEST - ✅ Sukses : Berhasil logout (URL sekarang: http://127.0.0.1:8000/)

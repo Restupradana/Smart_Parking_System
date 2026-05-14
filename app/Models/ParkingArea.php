@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class ParkingArea extends Model
+{
+    // Mass assignable sesuai kolom di migration
+    protected $fillable = [
+        'name',
+        'location',
+    ];
+
+    /**
+     * Relasi ke slot parkir
+     */
+    public function slots(): HasMany
+    {
+        return $this->hasMany(ParkingSlot::class, 'area_id');
+    }
+}
