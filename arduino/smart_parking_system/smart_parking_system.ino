@@ -27,14 +27,14 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // WIFI
 // =====================================================
 
-const char* ssid = "Sakila";
-const char* password = "qory3010";
+const char* ssid = "RESTU";
+const char* password = "lancar rezekinya";
 
 // =====================================================
 // API
 // =====================================================
 
-String serverName = "http://192.168.1.8:8000/api/v1";
+String serverName = "http:// 10.60.207.99:8000/api/v1";
 
 // =====================================================
 // RFID
