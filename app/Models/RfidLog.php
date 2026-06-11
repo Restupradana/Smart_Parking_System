@@ -14,6 +14,7 @@ class RfidLog extends Model
         'slot_id',
         'action',
         'location',
+        'gate',
         'logged_at',
     ];
 

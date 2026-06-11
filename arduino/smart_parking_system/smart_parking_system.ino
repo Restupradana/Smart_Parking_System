@@ -27,14 +27,14 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // WIFI
 // =====================================================
 
-const char* ssid = "RESTU";
+const char* ssid = "Putu Dana";
 const char* password = "lancar rezekinya";
 
 // =====================================================
 // API
 // =====================================================
 
-String serverName = "http:// 10.60.207.99:8000/api/v1";
+String serverName = "http://10.19.156.99:8000/api/v1";
 
 // =====================================================
 // RFID
@@ -102,7 +102,7 @@ Servo servoKeluar;
 // =====================================================
 
 unsigned long lastSensorSend = 0;
-const unsigned long sensorInterval = 5000;
+const unsigned long sensorInterval = 1000;
 
 // =====================================================
 // CACHE SLOT
@@ -112,6 +112,22 @@ int lastSlot1 = -1;
 int lastSlot2 = -1;
 int lastSlot3 = -1;
 int lastSlot4 = -1;
+
+// =====================================================
+// KONFIRMASI SLOT 5 DETIK
+// =====================================================
+
+const unsigned long KONFIRMASI_WAKTU = 5000;
+
+bool slot1Fix = false;
+bool slot2Fix = false;
+bool slot3Fix = false;
+bool slot4Fix = false;
+
+unsigned long timerSlot1 = 0;
+unsigned long timerSlot2 = 0;
+unsigned long timerSlot3 = 0;
+unsigned long timerSlot4 = 0;
 
 // =====================================================
 // WIFI RECONNECT
@@ -250,6 +266,34 @@ bool slotTerisi(float jarak)
 }
 
 // =====================================================
+// KONFIRMASI STATUS SLOT
+// =====================================================
+
+void updateSlotStatus(
+    bool sensorStatus,
+    bool &slotFix,
+    unsigned long &timerSlot)
+{
+    if (sensorStatus != slotFix)
+    {
+        if (timerSlot == 0)
+        {
+            timerSlot = millis();
+        }
+
+        if (millis() - timerSlot >= KONFIRMASI_WAKTU)
+        {
+            slotFix = sensorStatus;
+            timerSlot = 0;
+        }
+    }
+    else
+    {
+        timerSlot = 0;
+    }
+}
+
+// =====================================================
 // SERIAL SLOT
 // =====================================================
 
@@ -325,64 +369,58 @@ void kirimSensor(String slot, bool status)
 // KIRIM RFID
 // =====================================================
 
-bool kirimRFID(String uid)
+bool kirimRFID(String uid, String gate)
 {
-  if (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.println("WiFi Disconnect");
-    return false;
-  }
+    if (WiFi.status() != WL_CONNECTED)
+    {
+        Serial.println("WiFi Disconnect");
+        return false;
+    }
 
-  HTTPClient http;
+    HTTPClient http;
 
-  String url = serverName + "/rfid";
+    String url = serverName + "/rfid";
 
-  http.begin(url);
+    http.begin(url);
 
-  http.addHeader("Content-Type", "application/json");
+    http.addHeader("Content-Type", "application/json");
+    http.setTimeout(5000);
 
-  http.setTimeout(5000);
+    String body =
+        "{\"rfid_tag\":\"" + uid +
+        "\",\"gate\":\"" + gate + "\"}";
 
-  String body =
-      "{\"rfid_tag\":\"" + uid + "\"}";
+    Serial.println("======================");
+    Serial.println("KIRIM RFID");
+    Serial.println(body);
 
-  Serial.println("======================");
-  Serial.println("KIRIM RFID");
+    int httpCode = http.POST(body);
 
-  Serial.println("URL:");
-  Serial.println(url);
+    Serial.print("HTTP CODE : ");
+    Serial.println(httpCode);
 
-  Serial.println("BODY:");
-  Serial.println(body);
+    if (httpCode <= 0)
+    {
+        Serial.println("HTTP ERROR");
+        http.end();
+        return false;
+    }
 
-  int httpCode = http.POST(body);
+    String response = http.getString();
 
-  Serial.print("HTTP CODE : ");
-  Serial.println(httpCode);
-
-  if (httpCode <= 0)
-  {
-    Serial.println("HTTP ERROR");
+    Serial.println("======================");
+    Serial.println("SERVER RESPONSE:");
+    Serial.println(response);
 
     http.end();
 
+    if (httpCode == 200 &&
+        response.indexOf("\"status\":\"success\"") >= 0)
+    {
+        return true;
+    }
+
     return false;
-  }
-
-  String response = http.getString();
-
-  Serial.println("RESPONSE:");
-  Serial.println(response);
-
-  http.end();
-
-  if (httpCode == 200 &&
-      response.indexOf("\"status\":\"success\"") >= 0)
-  {
-    return true;
-  }
-
-  return false;
 }
 
 // =====================================================
@@ -444,12 +482,18 @@ void setup()
   // SPI RFID
   // =====================================================
 
-  SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN);
+SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN);
 
-  rfidMasuk.PCD_Init();
-  rfidKeluar.PCD_Init();
+pinMode(SS_ENTRANCE, OUTPUT);
+pinMode(SS_EXIT, OUTPUT);
 
-  Serial.println("RFID READY");
+digitalWrite(SS_ENTRANCE, HIGH);
+digitalWrite(SS_EXIT, HIGH);
+
+rfidMasuk.PCD_Init();
+rfidKeluar.PCD_Init();
+
+Serial.println("RFID READY");
 
   // =====================================================
   // SENSOR
@@ -512,10 +556,17 @@ void loop()
   // STATUS SLOT
   // =====================================================
 
-  bool slot1 = slotTerisi(jarak1);
-  bool slot2 = slotTerisi(jarak2);
-  bool slot3 = slotTerisi(jarak3);
-  bool slot4 = slotTerisi(jarak4);
+ bool slot1 = slotTerisi(jarak1);
+bool slot2 = slotTerisi(jarak2);
+bool slot3 = slotTerisi(jarak3);
+bool slot4 = slotTerisi(jarak4);
+
+// Konfirmasi 5 detik
+
+updateSlotStatus(slot1, slot1Fix, timerSlot1);
+updateSlotStatus(slot2, slot2Fix, timerSlot2);
+updateSlotStatus(slot3, slot3Fix, timerSlot3);
+updateSlotStatus(slot4, slot4Fix, timerSlot4);
 
   // =====================================================
   // SERIAL MONITOR
@@ -534,10 +585,10 @@ void loop()
 
   int slotKosong = 0;
 
-  if (!slot1) slotKosong++;
-  if (!slot2) slotKosong++;
-  if (!slot3) slotKosong++;
-  if (!slot4) slotKosong++;
+  if (!slot1Fix) slotKosong++;
+if (!slot2Fix) slotKosong++;
+if (!slot3Fix) slotKosong++;
+if (!slot4Fix) slotKosong++;
 
   Serial.print("Jumlah Slot Kosong : ");
   Serial.println(slotKosong);
@@ -585,113 +636,118 @@ void loop()
   {
     lastSensorSend = millis();
 
-    if (slot1 != lastSlot1)
-    {
-      kirimSensor("Area A-1", slot1);
-      lastSlot1 = slot1;
-    }
+    if (slot1Fix != lastSlot1)
+{
+    kirimSensor("Area A-1", slot1Fix);
+    lastSlot1 = slot1Fix;
+}
 
-    if (slot2 != lastSlot2)
-    {
-      kirimSensor("Area A-2", slot2);
-      lastSlot2 = slot2;
-    }
+if (slot2Fix != lastSlot2)
+{
+    kirimSensor("Area A-2", slot2Fix);
+    lastSlot2 = slot2Fix;
+}
 
-    if (slot3 != lastSlot3)
-    {
-      kirimSensor("Area A-3", slot3);
-      lastSlot3 = slot3;
-    }
+    if (slot3Fix != lastSlot3)
+{
+    kirimSensor("Area A-3", slot3Fix);
+    lastSlot3 = slot3Fix;
+}
 
-    if (slot4 != lastSlot4)
-    {
-      kirimSensor("Area A-4", slot4);
-      lastSlot4 = slot4;
-    }
+    if (slot4Fix != lastSlot4)
+{
+    kirimSensor("Area A-4", slot4Fix);
+    lastSlot4 = slot4Fix;
+}
   }
 
   // =====================================================
   // RFID MASUK
   // =====================================================
+  
+digitalWrite(SS_EXIT, HIGH);
+digitalWrite(SS_ENTRANCE, LOW);
 
-  if (rfidMasuk.PICC_IsNewCardPresent() &&
-      rfidMasuk.PICC_ReadCardSerial())
-  {
+if (rfidMasuk.PICC_IsNewCardPresent() &&
+    rfidMasuk.PICC_ReadCardSerial())
+{
     String uidMasuk = bacaUID(rfidMasuk);
 
-    Serial.print("Kartu Masuk : ");
+    Serial.println("======================");
+    Serial.println("GATE MASUK");
+    Serial.print("UID : ");
     Serial.println(uidMasuk);
 
     if (slotKosong == 0)
     {
-      Serial.println("PARKIR PENUH");
-
-      buzzerPenuh();
+        Serial.println("PARKIR PENUH");
+        buzzerPenuh();
     }
     else
     {
-      bool akses = kirimRFID(uidMasuk);
+        bool akses = kirimRFID(uidMasuk, "masuk");
 
-      if (akses)
-      {
-        Serial.println("AKSES MASUK DITERIMA");
+        if (akses)
+        {
+            Serial.println("AKSES MASUK DITERIMA");
 
-        buzzerMasuk();
+            buzzerMasuk();
 
-        servoMasuk.write(0);
+            servoMasuk.write(0);
+            delay(5000);
+            servoMasuk.write(90);
+        }
+        else
+        {
+            Serial.println("AKSES MASUK DITOLAK");
 
-        delay(5000);
-
-        servoMasuk.write(90);
-      }
-      else
-      {
-        Serial.println("KARTU TIDAK VALID");
-
-        buzzerDitolak();
-      }
+            buzzerDitolak();
+        }
     }
 
     rfidMasuk.PICC_HaltA();
     rfidMasuk.PCD_StopCrypto1();
-  }
+}
+
+  
 
   // =====================================================
   // RFID KELUAR
   // =====================================================
 
-  if (rfidKeluar.PICC_IsNewCardPresent() &&
-      rfidKeluar.PICC_ReadCardSerial())
-  {
+digitalWrite(SS_ENTRANCE, HIGH);
+digitalWrite(SS_EXIT, LOW);
+
+if (rfidKeluar.PICC_IsNewCardPresent() &&
+    rfidKeluar.PICC_ReadCardSerial())
+{
     String uidKeluar = bacaUID(rfidKeluar);
 
-    Serial.print("Kartu Keluar : ");
+    Serial.println("======================");
+    Serial.println("GATE KELUAR");
+    Serial.print("UID : ");
     Serial.println(uidKeluar);
 
-    bool akses = kirimRFID(uidKeluar);
+    bool akses = kirimRFID(uidKeluar, "keluar");
 
     if (akses)
     {
-      Serial.println("AKSES KELUAR DITERIMA");
+        Serial.println("AKSES KELUAR DITERIMA");
 
-      buzzerKeluar();
+        buzzerKeluar();
 
-      servoKeluar.write(0);
-
-      delay(5000);
-
-      servoKeluar.write(90);
+        servoKeluar.write(0);
+        delay(5000);
+        servoKeluar.write(90);
     }
     else
     {
-      Serial.println("KARTU TIDAK VALID");
+        Serial.println("AKSES KELUAR DITOLAK");
 
-      buzzerDitolak();
+        buzzerDitolak();
     }
 
     rfidKeluar.PICC_HaltA();
     rfidKeluar.PCD_StopCrypto1();
-  }
-
-  delay(1000);
+}
 }
