@@ -27,6 +27,7 @@ storage/framework/views/*
 bootstrap/cache/*.php
 bootstrap/cache/*.json
 public/build
+public/storage
 npm-debug.log
 yarn-error.log
 selenium

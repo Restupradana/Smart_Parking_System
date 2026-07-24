@@ -41,10 +41,8 @@ if [ $ATTEMPT -gt $MAX_ATTEMPTS ]; then
 fi
 
 # ─── Generate APP_KEY ────────────────────────────────
-if grep -q "APP_KEY=" .env && [ "$(grep 'APP_KEY=' .env | cut -d'=' -f2)" = "" ]; then
-    echo "[3/5] Generating APP_KEY..."
-    php artisan key:generate --force
-elif ! grep -q "APP_KEY=" .env; then
+CURRENT_KEY=$(grep '^APP_KEY=' .env | cut -d'=' -f2)
+if [ -z "$CURRENT_KEY" ]; then
     echo "[3/5] Generating APP_KEY..."
     php artisan key:generate --force
 else
