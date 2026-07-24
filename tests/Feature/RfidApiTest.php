@@ -3,7 +3,6 @@
 use App\Models\ParkingSlot;
 use App\Models\RfidCard;
 use App\Models\User;
-use App\Models\ParkingTransaction;
 
 test('rfid valid card grants access on entry', function () {
     $user = User::factory()->pengguna()->create();
