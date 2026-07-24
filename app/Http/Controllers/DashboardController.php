@@ -23,7 +23,7 @@ class DashboardController extends Controller
         $slots = ParkingSlot::with('area')
             ->orderByRaw('
                 substr(slot_number, 1, instr(slot_number, \'-\') - 1) ASC,
-                CAST(substr(slot_number, instr(slot_number, \'-\') + 1) AS INTEGER) ASC
+                CAST(substr(slot_number, instr(slot_number, \'-\') + 1) AS UNSIGNED) ASC
             ')
             ->get();
 

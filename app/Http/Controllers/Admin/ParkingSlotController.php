@@ -16,7 +16,7 @@ class ParkingSlotController extends Controller
         // 🔥 SORTING CUSTOM (A-1, A-2, A-10)
         $query->orderByRaw("
     substr(slot_number, 1, instr(slot_number, '-') - 1) ASC,
-    CAST(substr(slot_number, instr(slot_number, '-') + 1) AS INTEGER) ASC ");
+    CAST(substr(slot_number, instr(slot_number, '-') + 1) AS UNSIGNED) ASC ");
 
         $slots = $query->paginate(10)->withQueryString();
 
