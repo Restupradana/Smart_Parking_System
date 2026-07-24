@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 use App\Http\Controllers\Api\RfidController;
 use App\Http\Controllers\Api\SensorController;
+use App\Http\Requests\Api\RfidScanRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,24 +18,21 @@ Route::prefix('v1')->group(function () {
     // ================= RFID =================
 
     /**
-     * 🔥 RFID GATE (AKSES MASUK/KELUAR)
+     * RFID GATE (AKSES MASUK/KELUAR)
      * Digunakan saat kartu ditempel di gate
      * → logic masuk ke controller (pakai DB & rfid_logs)
      */
-    Route::post('/rfid', [RfidController::class, 'checkRFID']);
+    Route::post('/rfid', [RfidController::class, 'checkRFID'])
+        ->middleware('throttle:60,1');
 
 
     /**
-     * 🔥 RFID SCAN (UNTUK FORM TAMBAH USER)
+     * RFID SCAN (UNTUK FORM TAMBAH USER)
      * ESP32 kirim UID ke sini
      * → TIDAK DISIMPAN KE DATABASE
      * → hanya disimpan sementara (cache)
      */
-    Route::post('/rfid/scan', function (Request $request) {
-
-        $request->validate([
-            'rfid_tag' => 'required|string'
-        ]);
+    Route::post('/rfid/scan', function (RfidScanRequest $request) {
 
         // simpan ke cache selama 15 detik
         Cache::put('latest_rfid', $request->rfid_tag, now()->addSeconds(15));
@@ -45,28 +42,29 @@ Route::prefix('v1')->group(function () {
             'message' => 'RFID berhasil diterima',
             'rfid_tag' => $request->rfid_tag
         ]);
-    });
+    })->middleware('throttle:30,1');
 
 
     /**
-     * 🔥 AMBIL RFID TERAKHIR
+     * AMBIL RFID TERAKHIR
      * Dipakai oleh button "Scan" di form admin
      */
     Route::get('/rfid/latest', function () {
 
         return response()->json([
             'status' => 'success',
-            'rfid_tag' => Cache::get('latest_rfid') // bisa null kalau belum scan
+            'rfid_tag' => Cache::get('latest_rfid')
         ]);
-    });
+    })->middleware('throttle:30,1');
 
 
     // ================= SENSOR =================
 
     /**
-     * 🔥 SENSOR PARKIR (ULTRASONIK)
+     * SENSOR PARKIR (ULTRASONIK)
      * Update status slot parkir
      */
-    Route::post('/sensor', [SensorController::class, 'store']);
+    Route::post('/sensor', [SensorController::class, 'store'])
+        ->middleware('throttle:60,1');
 
 });

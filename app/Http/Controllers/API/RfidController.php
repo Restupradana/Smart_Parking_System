@@ -3,22 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Api\RfidCheckRequest;
 
 use App\Models\RfidCard;
 use App\Models\RfidLog;
 use App\Models\ParkingSlot;
+use App\Events\ParkingUpdated;
 
 class RfidController extends Controller
 {
-    public function checkRFID(Request $request)
+    public function checkRFID(RfidCheckRequest $request)
     {
         try {
-
-            $request->validate([
-                'rfid_tag' => 'required|string',
-                'gate'     => 'required|in:masuk,keluar'
-            ]);
 
             $uid  = strtoupper(trim($request->rfid_tag));
             $gate = $request->gate;
@@ -85,6 +81,10 @@ class RfidController extends Controller
                 'logged_at'    => now()
             ]);
 
+            if ($slot) {
+                event(new ParkingUpdated($slot));
+            }
+
             return response()->json([
                 'status'  => 'success',
                 'message' => 'Akses diterima',
@@ -95,9 +95,11 @@ class RfidController extends Controller
 
         } catch (\Exception $e) {
 
+            \Log::error('RFID gate error: ' . $e->getMessage());
+
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => 'Terjadi kesalahan pada server'
             ], 500);
         }
     }

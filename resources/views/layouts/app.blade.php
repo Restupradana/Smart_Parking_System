@@ -81,11 +81,13 @@
             @include('layouts.sidebar')
 
             {{-- CONTENT --}}
-            <main class="flex-1 p-6">
+            <main class="flex-1 p-6" data-parking-dashboard>
                 @yield('content')
             </main>
 
-        </div>
+            </div>
+
+    </div>
 
 </body>
 

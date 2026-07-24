@@ -9,7 +9,7 @@ class ParkingController extends Controller
 {
     public function index()
     {
-        $slots = ParkingSlot::with('parkingArea')->get();
+        $slots = ParkingSlot::with('area')->get();
 
         return view('user.slots', compact('slots'));
     }

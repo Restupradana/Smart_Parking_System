@@ -16,7 +16,7 @@ class RFIDLogSeeder extends Seeder
         $users = User::with('rfidCard')->get();
 
         // Ambil semua slot beserta relasi area
-        $slots = ParkingSlot::with('parkingArea')->get();
+        $slots = ParkingSlot::with('area')->get();
 
         foreach ($users as $user) {
 
@@ -26,7 +26,7 @@ class RFIDLogSeeder extends Seeder
             for ($i = 0; $i < rand(2, 4); $i++) {
 
                 $slot = $slots->random(); // ambil slot acak
-                $location = $slot->parkingArea->location ?? 'Unknown Area';
+                $location = $slot->area->location ?? 'Unknown Area';
 
                 $masukTime = Carbon::now()
                     ->subDays(rand(0, 2))

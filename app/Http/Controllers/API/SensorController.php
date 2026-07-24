@@ -3,21 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Api\SensorUpdateRequest;
 
 use App\Models\ParkingSlot;
 use App\Models\Sensor;
+use App\Events\ParkingUpdated;
 
 class SensorController extends Controller
 {
-    public function store(Request $request)
+    public function store(SensorUpdateRequest $request)
     {
         try {
-
-            $request->validate([
-                'slot_number' => 'required|string',
-                'status' => 'required|in:kosong,terisi'
-            ]);
 
             // Cari slot
             $slot = ParkingSlot::where(
@@ -62,6 +58,8 @@ class SensorController extends Controller
                 ]);
             }
 
+            event(new ParkingUpdated($slot));
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Sensor berhasil diupdate',
@@ -71,9 +69,11 @@ class SensorController extends Controller
 
         } catch (\Exception $e) {
 
+            \Log::error('Sensor update error: ' . $e->getMessage());
+
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => 'Terjadi kesalahan pada server'
             ], 500);
         }
     }

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -43,39 +44,28 @@ class RegisteredUserController extends Controller
         $waNumber = ltrim($waInput, '0'); // Hilangkan angka 0 di awal jika ada
         $waNumber = '+62' . $waNumber;
 
+        // Cari atau buat role 'pengguna'
+        $role = Role::firstOrCreate(['name' => 'pengguna']);
+
         // Simpan user ke tabel `users`
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'wa_number' => $waNumber,
             'password' => Hash::make($request->password),
+            'role_id' => $role->id,
             'email_verified_at' => now(),
             'remember_token' => Str::random(60),
         ]);
 
-        // Cari role_id untuk role 'user'
-        $roleId = DB::table('roles')->where('name', 'user')->value('id');
-
-        // Simpan ke tabel `user_roles`
-        DB::table('user_roles')->insert([
-            'user_id' => $user->id,
-            'role_id' => $roleId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         event(new Registered($user));
-
-        // Muat ulang user beserta relasi userRole dan role sebelum login
-        $user = $user->fresh(['userRole', 'userRole.role']);
 
         // Login user
         Auth::login($user);
 
         // Simpan role ke session
-        session(['selected_role' => $user->userRole->role->name]);
+        session(['selected_role' => $user->role->name]);
 
-
-        return redirect()->route('user.dashboard');
+        return redirect()->route('pengguna.dashboard');
     }
 }

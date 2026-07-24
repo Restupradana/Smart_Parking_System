@@ -5,13 +5,15 @@ Sistem parkir pintar berbasis **IoT (Internet of Things)** yang mengintegrasikan
 ## Fitur Utama
 
 - **Akses Gerbang Otomatis** — Kartu RFID untuk masuk/keluar tanpa operator
-- **Pemantauan Slot Real-Time** — Sensor ultrasonik mendeteksi status setiap slot parkir
+- **Pemantauan Slot Real-Time** — Sensor ultrasonik mendeteksi status setiap slot parkir dengan Pusher WebSocket
 - **Dashboard Admin** — Kelola pengguna, area parkir, slot, RFID cards, dan CMS landing page
 - **Dashboard Petugas** — Pantau status slot, lihat denah parkir, dan riwayat RFID
 - **Dashboard Pengguna** — Lihat ketersediaan slot dan riwayat parkir pribadi
 - **Notifikasi Buzzer** — Feedback audio untuk akses diterima, ditolak, dan parkir penuh
 - **OLED Display** — Menampilkan jumlah slot kosong pada panel hardware
 - **Role-Based Access Control** — 3 level akses: Admin, Petugas, Pengguna
+- **API Rate Limiting** — Proteksi API dari abuse dengan throttle middleware
+- **Docker Containerization** — Deployment mudah dengan Docker Compose
 
 ## Arsitektur Sistem
 
@@ -102,6 +104,16 @@ Sistem parkir pintar berbasis **IoT (Internet of Things)** yang mengintegrasikan
 | Pest PHP | Unit & feature testing |
 | Selenium | Browser automation testing |
 | Locust | Load & performance testing |
+
+### Testing Coverage
+| Test File | Tests | Fungsi |
+|-----------|-------|--------|
+| AdminDashboardTest | 3 | Akses dashboard admin & role check |
+| ParkingAreaCrudTest | 3 | CRUD area parkir |
+| ParkingSlotCrudTest | 2 | CRUD slot parkir |
+| UserManagementTest | 2 | CRUD pengguna |
+| RfidApiTest | 3 | API RFID gate & sensor |
+| RoleMiddlewareTest | 3 | Role-based access control |
 
 ### Containerization
 | Tool | Versi | Fungsi |
