@@ -34,18 +34,15 @@ Sistem parkir pintar berbasis **IoT (Internet of Things)** yang mengintegrasikan
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────┐
-│                 LARAVEL WEB APPLICATION                  │
+│              DOCKER CONTAINERS                           │
 │                                                         │
-│  ┌───────────┐  ┌───────────┐  ┌────────────────────┐  │
-│  │ API Layer │  │ Auth &    │  │ Dashboard Views    │  │
-│  │ /rfid     │  │ RBAC      │  │ (Admin/Petugas/    │  │
-│  │ /sensor   │  │ Middleware│  │  User)             │  │
-│  └───────────┘  └───────────┘  └────────────────────┘  │
-│                                                         │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │              SQLite / MySQL Database              │  │
-│  │  users | rfid_cards | parking_slots | rfid_logs  │  │
-│  └──────────────────────────────────────────────────┘  │
+│  ┌────────────┐   ┌────────────┐   ┌────────────────┐  │
+│  │   Nginx    │   │   App      │   │    MySQL       │  │
+│  │   :8000    │──▶│ (PHP-FPM)  │──▶│    :3306       │  │
+│  │            │   │ :9000      │   │                │  │
+│  │ + static   │   │ + artisan  │   │  smart_parking │  │
+│  │   files    │   │ + queue    │   │    database    │  │
+│  └────────────┘   └────────────┘   └────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -105,6 +102,14 @@ Sistem parkir pintar berbasis **IoT (Internet of Things)** yang mengintegrasikan
 | Pest PHP | Unit & feature testing |
 | Selenium | Browser automation testing |
 | Locust | Load & performance testing |
+
+### Containerization
+| Tool | Versi | Fungsi |
+|------|-------|--------|
+| Docker | >= 20.10 | Container runtime |
+| Docker Compose | >= 2.0 | Multi-container orchestration |
+| Nginx | Alpine | Reverse proxy & static file server |
+| MySQL | 8.0 | Database server |
 
 ---
 
@@ -248,6 +253,91 @@ python selenium/test_selenium.py
 
 ---
 
+## Containerization (Docker)
+
+Project ini mendukung containerization menggunakan **Docker Compose** dengan 3 service:
+- **app** — PHP 8.2-FPM (Laravel application + queue worker)
+- **nginx** — Nginx web server (reverse proxy + static files)
+- **mysql** — MySQL 8.0 database server
+
+### Prasyarat Docker
+
+- **Docker** >= 20.10
+- **Docker Compose** >= 2.0
+
+### Jalankan dengan Docker
+
+```bash
+# 1. Clone repository
+git clone https://github.com/Restupradana/Smart_Parking_System.git
+cd Smart_Parking_System
+
+# 2. Build & jalankan semua container
+docker-compose up -d --build
+
+# 3. Jalankan migrate + seed (otomatis via entrypoint, atau manual)
+docker-compose exec app php artisan migrate --seed
+
+# 4. Aplikasi berjalan di
+#    http://localhost:8000
+```
+
+### Perintah Docker Lainnya
+
+```bash
+# Lihat logs semua container
+docker-compose logs -f
+
+# Lihat logs hanya app
+docker-compose logs -f app
+
+# Stop containers (data MySQL tetap tersimpan)
+docker-compose down
+
+# Stop + hapus semua data volume
+docker-compose down -v
+
+# Rebuild container (WAJIB setelah perubahan kode)
+docker-compose up -d --build
+
+# Masuk ke container app (bash)
+docker-compose exec app bash
+
+# Jalankan artisan command
+docker-compose exec app php artisan <command>
+
+# Jalankan migration manual
+docker-compose exec app php artisan migrate
+
+# Jalankan seeder
+docker-compose exec app php artisan db:seed
+```
+
+> **Penting:** Karena semua file sudah ada di dalam image (tidak ada volume mount), setiap kali Anda mengubah source code, Anda **wajib rebuild** dengan `docker-compose up -d --build` agar perubahan terlihat di aplikasi.
+
+### Konfigurasi ESP32 dengan Docker
+
+Saat menggunakan Docker, pastikan firmware ESP32 mengarah ke port **8000** (Nginx):
+
+```cpp
+String serverName = "http://IP_KOMPUTER_ANDA:8000/api/v1";
+```
+
+### Struktur Docker
+
+```
+Smart_Parking_System/
+├── Dockerfile                  # Build image PHP-FPM + Laravel
+├── docker-compose.yml          # Orchestration: app + nginx + mysql
+├── .dockerignore               # File yang di-exclude dari build context
+└── docker/
+    ├── entrypoint.sh           # Startup script (wait MySQL, migrate)
+    └── nginx/
+        └── default.conf        # Konfigurasi Nginx server block
+```
+
+---
+
 ## API Endpoints
 
 | Method | Endpoint | Deskripsi | Auth |
@@ -291,6 +381,5 @@ This project is licensed under the MIT License.
 
 ## Catatan Penting
 
-- **Tidak menggunakan Docker** — Project ini tidak menerapkan sistem containerization. Tidak terdapat file `Dockerfile`, `docker-compose.yml`, atau `.dockerignore`. Meskipun `laravel/sail` terdaftar sebagai dev dependency, tidak ada konfigurasi Docker yang dibuat.
-- **Legacy Code** — Terdapat beberapa file dari project sebelumnya (Smart Trash Bin) yang belum dihapus, seperti `NotifikasiSampahPenuh` notification dan test report.
+- **Docker Support** — Project ini sudah mendukung containerization dengan Docker Compose. Lihat section [Containerization (Docker)](#containerization-docker) untuk panduan lengkap.
 - **API Security** — Endpoint API untuk ESP32 tidak menggunakan autentikasi (tanpa Sanctum/Passport). Pertimbangkan untuk menambahkan API token di production.
