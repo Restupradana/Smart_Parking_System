@@ -12,7 +12,7 @@ return new class extends Migration
 
             $table->enum('gate', [
                 'masuk',
-                'keluar'
+                'keluar',
             ])->after('location')->nullable();
 
         });

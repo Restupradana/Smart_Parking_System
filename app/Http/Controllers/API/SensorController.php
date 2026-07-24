@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\ParkingUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\SensorUpdateRequest;
-
 use App\Models\ParkingSlot;
 use App\Models\Sensor;
-use App\Events\ParkingUpdated;
 
 class SensorController extends Controller
 {
@@ -22,31 +21,31 @@ class SensorController extends Controller
             )->first();
 
             // Slot tidak ditemukan
-            if (!$slot) {
+            if (! $slot) {
 
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Slot tidak ditemukan'
+                    'message' => 'Slot tidak ditemukan',
                 ], 404);
             }
 
             // Update slot parkir
             $slot->update([
                 'status' => $request->status,
-                'last_updated' => now()
+                'last_updated' => now(),
             ]);
 
             // Cari sensor berdasarkan slot
             $sensor = Sensor::where('slot_id', $slot->id)->first();
 
             // Jika sensor belum ada
-            if (!$sensor) {
+            if (! $sensor) {
 
                 Sensor::create([
                     'slot_id' => $slot->id,
                     'type' => 'ultrasonic',
                     'last_status' => $request->status,
-                    'last_read_at' => now()
+                    'last_read_at' => now(),
                 ]);
 
             } else {
@@ -54,7 +53,7 @@ class SensorController extends Controller
                 // Update sensor
                 $sensor->update([
                     'last_status' => $request->status,
-                    'last_read_at' => now()
+                    'last_read_at' => now(),
                 ]);
             }
 
@@ -64,16 +63,16 @@ class SensorController extends Controller
                 'status' => 'success',
                 'message' => 'Sensor berhasil diupdate',
                 'slot' => $slot->slot_number,
-                'status_slot' => $request->status
+                'status_slot' => $request->status,
             ]);
 
         } catch (\Exception $e) {
 
-            \Log::error('Sensor update error: ' . $e->getMessage());
+            \Log::error('Sensor update error: '.$e->getMessage());
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'Terjadi kesalahan pada server'
+                'message' => 'Terjadi kesalahan pada server',
             ], 500);
         }
     }

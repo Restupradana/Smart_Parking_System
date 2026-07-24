@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class RfidCard extends Model
 {
+    use HasFactory;
+
     protected $table = 'rfid_cards';
 
     protected $fillable = [
         'user_id',
-        'uid',  
+        'uid',
         'is_active',
         'registered_at',
     ];

@@ -74,11 +74,16 @@ class PetugasController extends Controller
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'password' => 'required|min:6|confirmed'
+            'current_password' => 'required',
+            'password' => 'required|min:8|confirmed',
         ]);
 
+        if (! Hash::check($request->current_password, auth()->user()->password)) {
+            return back()->withErrors(['current_password' => 'Password lama tidak sesuai']);
+        }
+
         auth()->user()->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         return back()->with('success', 'Password berhasil diubah');

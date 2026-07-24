@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\ParkingSlot;
 use App\Models\ParkingArea;
+use App\Models\ParkingSlot;
+use Illuminate\Http\Request;
 
 class ParkingSlotController extends Controller
 {
-
     public function index(Request $request)
     {
         $query = ParkingSlot::with('area');
@@ -30,6 +29,7 @@ class ParkingSlotController extends Controller
     public function create()
     {
         $areas = ParkingArea::all();
+
         return view('admin.parking_slots.create', compact('areas'));
     }
 
@@ -60,6 +60,7 @@ class ParkingSlotController extends Controller
     public function edit(ParkingSlot $parkingSlot)
     {
         $areas = ParkingArea::all();
+
         return view('admin.parking_slots.edit', compact('parkingSlot', 'areas'));
     }
 

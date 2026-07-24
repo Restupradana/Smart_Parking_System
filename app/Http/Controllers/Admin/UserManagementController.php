@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Role;
 use App\Models\RfidCard;
-
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserManagementController extends Controller
 {
@@ -56,11 +55,11 @@ class UserManagementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'      => 'required|string|max:255',
-            'email'     => 'required|email|unique:users,email',
-            'rfid_tag'  => 'required|string|unique:rfid_cards,uid',
-            'role_id'   => 'required|exists:roles,id',
-            'is_active' => 'required|boolean'
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'rfid_tag' => 'required|string|unique:rfid_cards,uid',
+            'role_id' => 'required|exists:roles,id',
+            'is_active' => 'required|boolean',
         ]);
 
         DB::beginTransaction();
@@ -75,7 +74,7 @@ class UserManagementController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt(str()->random(8)),
-                'role_id' => $request->role_id
+                'role_id' => $request->role_id,
             ]);
 
             // =====================================================
@@ -86,7 +85,7 @@ class UserManagementController extends Controller
                 'user_id' => $user->id,
                 'uid' => strtoupper(trim($request->rfid_tag)),
                 'is_active' => $request->is_active,
-                'registered_at' => now()
+                'registered_at' => now(),
             ]);
 
             DB::commit();
@@ -98,7 +97,7 @@ class UserManagementController extends Controller
 
             DB::rollback();
 
-            \Log::error('STORE USER ERROR : ' . $e->getMessage());
+            \Log::error('STORE USER ERROR : '.$e->getMessage());
 
             return back()
                 ->with('error', '❌ Gagal tambah user')
@@ -132,12 +131,12 @@ class UserManagementController extends Controller
         $rfidId = optional($user->rfidCards->first())->id;
 
         $request->validate([
-            'name'      => 'required|string|max:255',
-            'email'     => 'required|email|unique:users,email,' . $user->id,
-            'rfid_tag'  => 'required|string|unique:rfid_cards,uid,' . $rfidId,
-            'role_id'   => 'required|exists:roles,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'rfid_tag' => 'required|string|unique:rfid_cards,uid,'.$rfidId,
+            'role_id' => 'required|exists:roles,id',
             'is_active' => 'required|boolean',
-            'password'  => 'nullable|min:6|confirmed'
+            'password' => 'nullable|min:6|confirmed',
         ]);
 
         DB::beginTransaction();
@@ -173,7 +172,7 @@ class UserManagementController extends Controller
                 // UPDATE RFID
                 $card->update([
                     'uid' => strtoupper(trim($request->rfid_tag)),
-                    'is_active' => $request->is_active
+                    'is_active' => $request->is_active,
                 ]);
 
             } else {
@@ -183,7 +182,7 @@ class UserManagementController extends Controller
                     'user_id' => $user->id,
                     'uid' => strtoupper(trim($request->rfid_tag)),
                     'is_active' => $request->is_active,
-                    'registered_at' => now()
+                    'registered_at' => now(),
                 ]);
             }
 
@@ -197,10 +196,10 @@ class UserManagementController extends Controller
 
             DB::rollback();
 
-            \Log::error('UPDATE USER ERROR : ' . $e->getMessage());
+            \Log::error('UPDATE USER ERROR : '.$e->getMessage());
 
             return back()
-                ->with('error', '❌ Gagal update user : ' . $e->getMessage())
+                ->with('error', 'Gagal update user')
                 ->withInput();
         }
     }

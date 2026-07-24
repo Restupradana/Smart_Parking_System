@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Models\HomeSection;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,8 +22,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         view()->composer('*', function ($view) {
-        $view->with('homeSection', HomeSection::first());
-        Paginator::useTailwind();
-    });
+            $view->with('homeSection', HomeSection::first());
+            Paginator::useTailwind();
+        });
     }
 }

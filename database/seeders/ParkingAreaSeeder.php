@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\ParkingArea;
+use Illuminate\Database\Seeder;
 
 class ParkingAreaSeeder extends Seeder
 {
@@ -11,12 +11,12 @@ class ParkingAreaSeeder extends Seeder
     {
         ParkingArea::create([
             'name' => 'Area A',
-            'location' => 'Depan Kampus'
+            'location' => 'Depan Kampus',
         ]);
 
         ParkingArea::create([
             'name' => 'Area B',
-            'location' => 'Belakang Kampus'
+            'location' => 'Belakang Kampus',
         ]);
     }
 }

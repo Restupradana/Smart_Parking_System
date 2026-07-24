@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\HomeSection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class HomeSectionController extends Controller
@@ -45,8 +45,8 @@ class HomeSectionController extends Controller
         // Upload gambar utama
         if ($request->hasFile('image_path')) {
 
-            if ($section->image_path && Storage::exists('public/' . $section->image_path)) {
-                Storage::delete('public/' . $section->image_path);
+            if ($section->image_path && Storage::exists('public/'.$section->image_path)) {
+                Storage::delete('public/'.$section->image_path);
             }
 
             $section->image_path = $request->file('image_path')->store('home', 'public');
@@ -55,8 +55,8 @@ class HomeSectionController extends Controller
         // Upload logo
         if ($request->hasFile('logo_path')) {
 
-            if ($section->logo_path && Storage::exists('public/' . $section->logo_path)) {
-                Storage::delete('public/' . $section->logo_path);
+            if ($section->logo_path && Storage::exists('public/'.$section->logo_path)) {
+                Storage::delete('public/'.$section->logo_path);
             }
 
             $section->logo_path = $request->file('logo_path')->store('logo', 'public');

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\ParkingSlot;
 use App\Models\RfidLog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -54,15 +54,20 @@ class UserController extends Controller
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'password' => 'required|min:6|confirmed'
+            'current_password' => 'required',
+            'password' => 'required|min:8|confirmed',
         ]);
 
+        if (! Hash::check($request->current_password, auth()->user()->password)) {
+            return back()->withErrors(['current_password' => 'Password lama tidak sesuai']);
+        }
+
         auth()->user()->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         return redirect()
-            ->route('pengguna.dashboard') //
+            ->route('pengguna.dashboard')
             ->with('success', 'Password berhasil diubah');
     }
 }

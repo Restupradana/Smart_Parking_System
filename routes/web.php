@@ -1,15 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\HomeSectionController;
 use App\Http\Controllers\Admin\ParkingAreaController;
 use App\Http\Controllers\Admin\ParkingSlotController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Petugas\PetugasController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\ParkingController;
 use App\Http\Controllers\User\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,4 +117,4 @@ Route::middleware(['auth', 'role:pengguna'])
         Route::post('/password', [UserController::class, 'updatePassword'])->name('updatePassword');
     });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

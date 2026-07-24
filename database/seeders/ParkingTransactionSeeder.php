@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\ParkingSlot;
 use App\Models\ParkingTransaction;
 use App\Models\User;
-use App\Models\ParkingSlot;
+use Illuminate\Database\Seeder;
 
 class ParkingTransactionSeeder extends Seeder
 {
@@ -19,7 +19,7 @@ class ParkingTransactionSeeder extends Seeder
             $user = $users->random();
             $slot = $slots->random();
             $entryTime = now()->subHours(rand(1, 48));
-            $exitTime = rand(0,1) ? $entryTime->copy()->addHours(rand(1,5)) : null;
+            $exitTime = rand(0, 1) ? $entryTime->copy()->addHours(rand(1, 5)) : null;
             $status = $exitTime ? 'keluar' : 'masuk';
 
             ParkingTransaction::create([

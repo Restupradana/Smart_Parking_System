@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ParkingArea extends Model
 {
+    use HasFactory;
+
     // Mass assignable sesuai kolom di migration
     protected $fillable = [
         'name',

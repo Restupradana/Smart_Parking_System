@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\User;
 use App\Models\ParkingArea;
+use App\Models\User;
 
 test('admin can view parking areas list', function () {
     $user = User::factory()->admin()->create();

@@ -1,11 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Cache;
-
 use App\Http\Controllers\Api\RfidController;
 use App\Http\Controllers\Api\SensorController;
 use App\Http\Requests\Api\RfidScanRequest;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +24,6 @@ Route::prefix('v1')->group(function () {
     Route::post('/rfid', [RfidController::class, 'checkRFID'])
         ->middleware('throttle:60,1');
 
-
     /**
      * RFID SCAN (UNTUK FORM TAMBAH USER)
      * ESP32 kirim UID ke sini
@@ -40,10 +38,9 @@ Route::prefix('v1')->group(function () {
         return response()->json([
             'status' => 'success',
             'message' => 'RFID berhasil diterima',
-            'rfid_tag' => $request->rfid_tag
+            'rfid_tag' => $request->rfid_tag,
         ]);
     })->middleware('throttle:30,1');
-
 
     /**
      * AMBIL RFID TERAKHIR
@@ -53,10 +50,9 @@ Route::prefix('v1')->group(function () {
 
         return response()->json([
             'status' => 'success',
-            'rfid_tag' => Cache::get('latest_rfid')
+            'rfid_tag' => Cache::get('latest_rfid'),
         ]);
     })->middleware('throttle:30,1');
-
 
     // ================= SENSOR =================
 

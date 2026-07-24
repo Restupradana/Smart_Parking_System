@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Sensor;
 use App\Models\ParkingSlot;
+use App\Models\Sensor;
+use Illuminate\Database\Seeder;
 
 class SensorSeeder extends Seeder
 {

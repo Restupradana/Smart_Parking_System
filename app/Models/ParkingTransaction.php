@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ParkingTransaction extends Model
 {
+    use HasFactory;
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -13,7 +16,12 @@ class ParkingTransaction extends Model
         'slot_id',
         'entry_time',
         'exit_time',
-        'status'
+        'status',
+    ];
+
+    protected $casts = [
+        'entry_time' => 'datetime',
+        'exit_time' => 'datetime',
     ];
 
     public function user()

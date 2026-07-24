@@ -13,8 +13,8 @@ class CreateSensorsTable extends Migration
 
             // Relasi ke slot parkir
             $table->foreignId('slot_id')
-                  ->constrained('parking_slots')
-                  ->onDelete('cascade');
+                ->constrained('parking_slots')
+                ->onDelete('cascade');
 
             // Jenis sensor (ultrasonic)
             $table->string('type');

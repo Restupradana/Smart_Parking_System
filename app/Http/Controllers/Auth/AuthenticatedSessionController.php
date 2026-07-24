@@ -37,6 +37,7 @@ class AuthenticatedSessionController extends Controller
         if (count($roles) === 0) {
             // Jika user tidak memiliki role sama sekali
             Auth::logout();
+
             return redirect()->route('login')->withErrors([
                 'email' => 'Akun Anda belum memiliki role yang valid.',
             ]);
@@ -45,10 +46,12 @@ class AuthenticatedSessionController extends Controller
         if (count($roles) === 1) {
             // Kalau hanya satu role, simpan ke session
             session(['selected_role' => $roles[0]]);
-            return redirect()->route($roles[0] . '.dashboard');
+
+            return redirect()->route($roles[0].'.dashboard');
         } else {
             // Kalau lebih dari satu role, arahkan ke halaman pemilihan
             session(['available_roles' => $roles]);
+
             return redirect()->route('pilih.role');
         }
     }
@@ -61,6 +64,7 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/');
     }
 }

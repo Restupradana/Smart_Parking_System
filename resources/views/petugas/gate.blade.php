@@ -39,11 +39,12 @@
 
     <div class="bg-white p-6 rounded shadow">
 
-        <p class="mb-4">Gunakan RFID untuk membuka gate</p>
+        <p class="mb-4">Gunakan kartu RFID di gate untuk membuka akses masuk/keluar secara otomatis.</p>
 
-        <button class="bg-green-500 text-white px-4 py-2 rounded">
-            Buka Gate (Manual)
-        </button>
+        <div class="flex items-center gap-4">
+            <span class="inline-block w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+            <span class="text-sm text-gray-600">Gate aktif — tempelkan kartu RFID di reader</span>
+        </div>
 
     </div>
 

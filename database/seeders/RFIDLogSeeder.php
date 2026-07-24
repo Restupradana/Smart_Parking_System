@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\ParkingSlot;
 use App\Models\RFIDLog;
 use App\Models\User;
-use App\Models\ParkingSlot;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class RFIDLogSeeder extends Seeder
 {
@@ -20,7 +20,9 @@ class RFIDLogSeeder extends Seeder
 
         foreach ($users as $user) {
 
-            if (!$user->rfidCard) continue;
+            if (! $user->rfidCard) {
+                continue;
+            }
 
             // Simulasi aktivitas 3 hari terakhir
             for ($i = 0; $i < rand(2, 4); $i++) {
