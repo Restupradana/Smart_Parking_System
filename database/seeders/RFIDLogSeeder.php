@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\ParkingSlot;
-use App\Models\RFIDLog;
+use App\Models\RfidLog;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
@@ -12,6 +12,10 @@ class RFIDLogSeeder extends Seeder
 {
     public function run(): void
     {
+        if (RfidLog::count() > 0) {
+            return;
+        }
+
         // Ambil semua user yang punya kartu RFID
         $users = User::with('rfidCard')->get();
 
@@ -35,7 +39,7 @@ class RFIDLogSeeder extends Seeder
                     ->subMinutes(rand(30, 180));
 
                 // MASUK
-                RFIDLog::create([
+                RfidLog::create([
                     'user_id' => $user->id,
                     'rfid_card_id' => $user->rfidCard->id,
                     'slot_id' => $slot->id,
@@ -45,7 +49,7 @@ class RFIDLogSeeder extends Seeder
                 ]);
 
                 // KELUAR
-                RFIDLog::create([
+                RfidLog::create([
                     'user_id' => $user->id,
                     'rfid_card_id' => $user->rfidCard->id,
                     'slot_id' => $slot->id,

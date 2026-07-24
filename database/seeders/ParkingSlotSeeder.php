@@ -10,6 +10,10 @@ class ParkingSlotSeeder extends Seeder
 {
     public function run(): void
     {
+        if (ParkingSlot::count() > 0) {
+            return;
+        }
+
         $areas = ParkingArea::all();
 
         foreach ($areas as $area) {

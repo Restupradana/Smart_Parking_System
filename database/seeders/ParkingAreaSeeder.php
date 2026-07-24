@@ -9,6 +9,10 @@ class ParkingAreaSeeder extends Seeder
 {
     public function run(): void
     {
+        if (ParkingArea::count() > 0) {
+            return;
+        }
+
         ParkingArea::create([
             'name' => 'Area A',
             'location' => 'Depan Kampus',

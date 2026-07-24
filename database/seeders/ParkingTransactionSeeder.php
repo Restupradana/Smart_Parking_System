@@ -11,6 +11,10 @@ class ParkingTransactionSeeder extends Seeder
 {
     public function run(): void
     {
+        if (ParkingTransaction::count() > 0) {
+            return;
+        }
+
         $users = User::all();
         $slots = ParkingSlot::all();
 

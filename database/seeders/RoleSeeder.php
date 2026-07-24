@@ -12,6 +12,10 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
+        if (DB::table('roles')->count() > 0) {
+            return;
+        }
+
         DB::table('roles')->insert([
             [
                 'name' => 'admin',

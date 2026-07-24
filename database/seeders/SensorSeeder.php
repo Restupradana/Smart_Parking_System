@@ -10,6 +10,10 @@ class SensorSeeder extends Seeder
 {
     public function run(): void
     {
+        if (Sensor::count() > 0) {
+            return;
+        }
+
         $slots = ParkingSlot::all();
 
         foreach ($slots as $slot) {
