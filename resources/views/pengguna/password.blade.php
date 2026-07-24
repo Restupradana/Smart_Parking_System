@@ -31,6 +31,14 @@
     <form method="POST" action="{{ route('pengguna.updatePassword') }}">
         @csrf
 
+        <!-- PASSWORD LAMA -->
+        <div class="mb-4">
+            <label class="block mb-1 font-semibold">Password Lama</label>
+            <input type="password" name="current_password"
+                class="w-full border rounded p-2 focus:outline-none focus:ring focus:border-blue-300"
+                required>
+        </div>
+
         <!-- PASSWORD BARU -->
         <div class="mb-4">
             <label class="block mb-1 font-semibold">Password Baru</label>

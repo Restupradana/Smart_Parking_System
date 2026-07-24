@@ -40,6 +40,20 @@
         <form method="POST" action="{{ route('petugas.updatePassword') }}" class="space-y-6">
             @csrf
 
+            <!-- PASSWORD LAMA -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Password Lama
+                </label>
+
+                <input type="password" name="current_password"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50
+                           focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                           transition outline-none"
+                    placeholder="Masukkan password lama"
+                    required>
+            </div>
+
             <!-- PASSWORD BARU -->
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">

@@ -385,7 +385,7 @@
 
         window.location.reload();
 
-    }, 10000);
+    }, 30000);
 
 </script>
 
