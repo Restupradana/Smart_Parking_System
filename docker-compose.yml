@@ -53,8 +53,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
       MYSQL_DATABASE: ${DB_DATABASE:-smart_parking}
-      MYSQL_USER: ${DB_USERNAME:-root}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
     ports:
       - "${DB_PORT_EXPOSE:-3306}:3306"
     volumes:
@@ -65,7 +63,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
 
 # ─── Volumes ──────────────────────────────────────────
 volumes:

@@ -40,12 +40,13 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# ─── Step 2: Install Frontend Dependencies & Build ────
-COPY package.json package-lock.json ./
-RUN npm install && npm run build
-
-# ─── Step 3: Copy Source Code ────────────────────────
+# ─── Step 2: Copy Source Code ────────────────────────
 COPY . .
+
+# ─── Step 3: Install Frontend Dependencies & Build ────
+RUN npm install
+RUN npm run build
+RUN rm -rf node_modules
 
 # ─── Step 4: Run Composer Post-Install Scripts ────────
 RUN composer dump-autoload --optimize \

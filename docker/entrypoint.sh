@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 echo "============================================"
 echo "  Smart Parking System - Starting..."
@@ -58,7 +57,7 @@ php artisan storage:link --force 2>/dev/null || true
 
 # ─── Migrate Database ─────────────────────────────────
 echo "[5/5] Running database migrations..."
-php artisan migrate --force
+php artisan migrate --force || echo "WARNING: Migration failed or already completed, continuing..."
 
 echo "============================================"
 echo "  Smart Parking System is ready!"

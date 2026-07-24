@@ -243,12 +243,6 @@ php artisan serve --host=0.0.0.0 --port=8000
 # Unit & Feature testing (Pest/PHPUnit)
 composer test
 
-# Load testing (Locust) — membutuhkan Python
-pip install locust
-locust -f selenium/locustfile.py
-
-# Selenium testing — membutuhkan Python & WebDriver
-python selenium/test_selenium.py
 ```
 
 ---
