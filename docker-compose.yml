@@ -30,6 +30,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    volumes:
+      - storage_data:/var/www/html/storage/app/public
 
   # ─── Nginx Web Server ─────────────────────────────────
   nginx:
@@ -44,6 +46,8 @@ services:
       - smart-parking-net
     depends_on:
       - app
+    volumes:
+      - storage_data:/var/www/html/storage/app/public
 
   # ─── MySQL Database ───────────────────────────────────
   mysql:
@@ -69,6 +73,7 @@ services:
 # ─── Volumes ──────────────────────────────────────────
 volumes:
   mysql_data:
+  storage_data:
 
 # ─── Network ──────────────────────────────────────────
 networks:
